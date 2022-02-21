@@ -1,8 +1,5 @@
-N = int(input())
-point = []
-for _ in range(N):
-    point.append([int(x) for x in input().split()])
+import sys
 
-point.sort(key=lambda point: (point[0], point[1]))
-for i in range(N):
-    print(point[i][0], point[i][1])
+point = sys.stdin.readlines()[1:]
+point.sort(key=lambda point: (int(point.split()[0]), int(point.split()[1])))
+print("".join(point))
