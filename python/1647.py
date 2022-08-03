@@ -22,13 +22,20 @@ for _ in range(M):
 edges.sort()
 
 total_cost = 0
-last_cost = 0
+# last_cost = 0
 parent = [i for i in range(N+1)]
+
+count = N-2
 for edge in edges:
     cost, a, b = edge
     if find_parent(parent, a) != find_parent(parent, b):
         union_parent(parent, a, b)
         total_cost += cost
-        last_cost = cost
+        count -= 1
+        # last_cost = cost
 
-print(total_cost - last_cost)
+        if count == 0:
+            break
+
+# print(total_cost - last_cost)
+print(total_cost)
