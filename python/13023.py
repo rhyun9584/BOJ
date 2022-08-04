@@ -1,14 +1,16 @@
 import sys
 input = sys.stdin.readline
 
-def dfs(n, graph, friends):
-    if len(friends) == 5:
-        return True
+def dfs(n, graph, visited, ans):
+    if ans == 5:
+        print(1)
+        sys.exit()
 
     for g in graph[n]:
-        if g not in friends:
-            if dfs(g, graph, friends+[g]):
-                return True
+        if visited[g] == 0:
+            visited[g] = 1
+            dfs(g, graph, visited, ans+1)
+            visited[g] = 0
 
 N, M = map(int, input().split())
 
@@ -19,9 +21,10 @@ for _ in range(M):
     graph[b].append(a)
 
 result = 0
+visited = [0] * (N)
 for i in range(N):
-    if dfs(i, graph, [i]):
-        result = 1
-        break
+    visited[i] = 1
+    dfs(i, graph, visited, 1)
+    visited[i] = 0
 
-print(result)
+print(0)
