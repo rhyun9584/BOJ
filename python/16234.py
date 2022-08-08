@@ -1,43 +1,52 @@
-import sys
-sys.setrecursionlimit(10**5)
+from collections import deque
 
-N, L, R = [int(x) for x in input().split()]
-population = [[int(x) for x in input().split()] for _ in range(N)]
-direction = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+N, L, R = map(int, input().split())
+p = [list(map(int, input().split())) for _ in range(N)]
 
-def build_unite(start, check, unite):
-    unite.append(start)
-    check.remove(start)
-    for (x, y) in direction:
-        move = (start[0]+x, start[1]+y)
-        if move in check and 0 <= move[0] < N and 0 <= move[1] < N:
-            sub = abs(population[start[0]][start[1]] - population[move[0]][move[1]])
-            if L <= sub <= R:
-                build_unite(move, check, unite)
+dx = [-1, 1, 0, 0]
+dy = [0, 0, -1, 1]
+def bfs(a, b, visited, p):
+    queue = deque([(a, b)])
+    visited[a][b] = 1
 
-    return unite
+    sum = p[a][b]
+    count = 1
+    unite = [(a, b)]
+    while queue:
+        x, y = queue.popleft()
+        for i in range(4):
+            nx = x + dx[i]
+            ny = y + dy[i]
+            if 0 <= nx < N and 0 <= ny < N and visited[nx][ny] == 0 and\
+                L <= abs(p[nx][ny] - p[x][y]) <= R:
+                visited[nx][ny] = 1
+                sum += p[nx][ny]
+                count += 1
+                unite.append((nx, ny))
 
-time = 0
+                queue.append((nx, ny))
+    
+    if count > 1:
+        new_p = sum // count
+        for ux, uy in unite:
+            p[ux][uy] = new_p
+
+        return True
+
+    return False
+
+c = 0
 while True:
-    check = [(x, y) for x in range(N) for y in range(N)]
-    unite_list = []
-    while len(check) > 0:
-        seed = check[0]
-        unite = build_unite(seed, check, [])
-        if len(unite) > 1:
-            unite_list.append(unite)
+    result = False
+    visited = [[0] * N for i in range(N)]
+    for i in range(N):
+        for j in range(N):
+            if visited[i][j] == 0:
+                # result가 False -> True로만 변경 가능
+                result = (bfs(i, j, visited, p) | result)
 
-    if len(unite_list) == 0:
-        break
+    if result:
+        c += 1
     else:
-        for unite in unite_list:
-            sum = 0
-            for unit in unite:
-                sum += population[unit[0]][unit[1]]
-            popluar = int(sum/len(unite))
-            for unit in unite:
-                population[unit[0]][unit[1]] = popluar
-
-    time += 1
-
-print(time)
+        print(c)
+        break
