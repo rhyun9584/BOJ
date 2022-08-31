@@ -18,9 +18,7 @@ for i in range(max(1, L-len(others)), min(L-1, len(vowels)+1)):
 
     for v in combinations(vowels, i):
         for o in combinations(others, j):
-            using = sorted(v+o)
-            for u in combinations(using, L):
-                result.add(u)
+            result.add("".join(sorted(v+o)))
 
 result = sorted(list(result))
 for r in result:
