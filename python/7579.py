@@ -17,5 +17,6 @@ for i in range(1, N+1):
 
         if dp[i][j] >= M:
             result = min(result, j)
+            break
 
 print(result)
