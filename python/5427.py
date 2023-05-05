@@ -25,9 +25,6 @@ for _ in range(int(input())):
         for j in range(W):
             if board[i][j] == '*':
                 fire.append((i, j))
-                
-                # 0초에서 붙은 불 
-                board[i][j] = 0
 
     queue = deque()
     for fx, fy in fire:
@@ -41,22 +38,17 @@ for _ in range(int(input())):
     while queue:
         x, y, is_fire, cnt = queue.popleft()
 
-        if not is_fire:
-            # 존재 가능한 위치인지 확인
-            if board[x][y].isdigit() and int(board[x][y]) < cnt:
-                continue
-
-            # 탈출 성공
-            if (x in (0, H-1) or y in (0, W-1)):
-                answer = cnt+1
-                break
+        # 탈출 성공
+        if not is_fire and (x in (0, H-1) or y in (0, W-1)):
+            answer = cnt+1
+            break
 
         for i in range(4):
             nx = x + dx[i]
             ny = y + dy[i]
             if 0 <= nx < H and 0 <= ny < W and board[nx][ny] == '.':
                 if is_fire:
-                    board[nx][ny] = str(cnt+1)
+                    board[nx][ny] = '*'
                     queue.append((nx, ny, True, cnt+1))
                 elif visited[nx][ny] == 0:
                     visited[nx][ny] = 1
