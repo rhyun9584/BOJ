@@ -1,47 +1,68 @@
 import sys
 from collections import deque
+
 input = sys.stdin.readline
+
+dx = [-1, 1, 0, 0]
+dy = [0, 0, -1, 1]
 
 for _ in range(int(input())):
     W, H = map(int, input().split())
 
-    start = (0, 0)
-    fire = []
     board = []
+    fire = []
+    sx, sy = 0, 0
     for i in range(H):
-        arr = list(input().rstrip())
+        board.append(list(input().rstrip()))
 
-        if '@' in arr:
-            start = (i, arr.index('@'))
-
+        # 시작 위치 확인
+        if '@' in board[-1]:
+            sx = i
+            sy = board[-1].index('@')
+            board[sx][sy] = '.'
+        
+        # 불 위치 확인
         for j in range(W):
-            if arr[j] == '*':
+            if board[i][j] == '*':
                 fire.append((i, j))
-
-        board.append(arr)
+                
+                # 0초에서 붙은 불 
+                board[i][j] = 0
 
     queue = deque()
     for fx, fy in fire:
-        queue.append((fx, fy, '*', 0))
-    queue.append((start[0], start[1], '@', 0))
+        queue.append((fx, fy, True, 0))
+    queue.append((sx, sy, False, 0))
 
-    result = -1
+    visited = [[0] * W for _ in range(H)]
+    visited[sx][sy] = 1
 
-    dx = [0, 0, -1, 1]
-    dy = [-1, 1, 0, 0]
+    answer = -1
     while queue:
-        x, y, ch, cnt = queue.popleft()
+        x, y, is_fire, cnt = queue.popleft()
 
-        if (x in (0, H-1) or y in (0, W-1)) and ch == '@':
-            result = cnt+1
-            break
+        if not is_fire:
+            # 존재 가능한 위치인지 확인
+            if board[x][y].isdigit() and int(board[x][y]) < cnt:
+                continue
+
+            # 탈출 성공
+            if (x in (0, H-1) or y in (0, W-1)):
+                answer = cnt+1
+                break
 
         for i in range(4):
             nx = x + dx[i]
             ny = y + dy[i]
+            if 0 <= nx < H and 0 <= ny < W and board[nx][ny] == '.':
+                if is_fire:
+                    board[nx][ny] = str(cnt+1)
+                    queue.append((nx, ny, True, cnt+1))
+                elif visited[nx][ny] == 0:
+                    visited[nx][ny] = 1
+                    queue.append((nx, ny, False, cnt+1))
 
-            if 0 <= nx < H and 0 <= ny < W and board[nx][ny] in ('.', '@'):
-                board[nx][ny] = ch
-                queue.append((nx, ny, ch, cnt+1))
-
-    print(result if result != -1 else 'IMPOSSIBLE')
+    if answer == -1:
+        print("IMPOSSIBLE")
+    else:
+        print(answer)
